@@ -12,7 +12,7 @@ let getWeb3 = new Promise(function (resolve, reject) {
     if (typeof web3js !== 'undefined') {
         var web3 = new Web3(web3js.currentProvider)
         resolve({
-            injectedWeb3: web3.isConnected();
+            injectedWeb3: web3.isConnected(),
             web3() {
                 return web3
             }
