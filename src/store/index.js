@@ -29,7 +29,7 @@ export const store = new Vuex.Store({
     pollWeb3Instance(state, payload) {
       console.log('pollWeb3Instance mutation being executed', payload)
       state.web3.coinbase = payload.coinbase
-      state.web3.balance = parseInt(payload.balance, 10)
+      state.web3.balance = parseInt(payload.balance, 10)/ 10 ** 18 + " ETH"
     }
 
   },
