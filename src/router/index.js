@@ -5,11 +5,9 @@ import CasinoDApp from '@/components/casino-dapp'
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'casino-dapp',
-      component: CasinoDApp
-    }
-  ]
+  routes: [{
+    path: '/',
+    name: 'casino-dapp',
+    component: CasinoDApp
+  }]
 })
