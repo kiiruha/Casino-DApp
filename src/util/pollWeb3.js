@@ -1,9 +1,11 @@
 import Web3 from 'web3'
-import {store} from '../store/'
+import { store } from '../store/'
+
 
 let pollWeb3 = function (state) {
   let web3 = window.web3
   web3 = new Web3(web3.currentProvider)
+
 
   setInterval(() => {
     if (web3 && store.state.web3.web3Instance) {
@@ -13,9 +15,15 @@ let pollWeb3 = function (state) {
           if (err) {
             console.log(err)
           } else {
-            store.dispatch('pollWeb3', {
-              coinbase: newCoinbase,
-              balance: parseInt(newBalance, 10)
+            let newTokenBalance
+            store.state.tokenContractInstance().balanceOf.call(newCoinbase, function (err, symbol) {
+              if (err) { console.log(err) }
+              newTokenBalance = symbol
+              store.dispatch('pollWeb3', {
+                coinbase: newCoinbase,
+                balance: parseInt(newBalance, 10),
+                tokenBalance: newTokenBalance
+              })
             })
           }
         })
@@ -24,9 +32,15 @@ let pollWeb3 = function (state) {
           if (err) {
             console.log(err)
           } else if (parseInt(polledBalance, 10) !== store.state.web3.balance) {
-            store.dispatch('pollWeb3', {
-              coinbase: store.state.web3.coinbase,
-              balance: polledBalance
+            let TokenBalance
+            store.state.tokenContractInstance().balanceOf.call(store.state.web3.coinbase, function (err, symbol) {
+              if (err) { console.log(err) }
+              TokenBalance = symbol
+              store.dispatch('pollWeb3', {
+                coinbase: store.state.web3.coinbase,
+                balance: polledBalance,
+                tokenBalance: TokenBalance
+              })
             })
           }
         })

@@ -1,10 +1,14 @@
 import Web3 from 'web3'
 import {address, ABI} from './constants/tokenContract'
-let getContract = new Promise(function (resolve, reject) {
+let getTokenContract = new Promise(function (resolve, reject) {
  let web3 = new Web3(window.web3.currentProvider)
- let tasinoContract = web3.eth.contract(ABI)
- let tasinoContractInstance = tasinoContract.at(address)
+ //let web3 = new Web3(new Web3.providers.HttpProvider('http://ropsten.infura.io')) 
+ let tokenContract = web3.eth.contract(ABI)
+ let tokenContractInstance = tokenContract.at(address)
  // casinoContractInstance = () => casinoContractInstance
- resolve(tasinoContractInstance)
+ //console.log(tokenContract)
+ //console.log(tokenContractInstance)
+
+ resolve(tokenContractInstance)
 })
-export default getContract
+export default getTokenContract

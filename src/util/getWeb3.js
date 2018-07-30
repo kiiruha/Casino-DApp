@@ -1,15 +1,8 @@
 import Web3 from 'web3'
-
-/*
-* 1. Check for injected web3 (mist/metamask)
-* 2. If metamask/mist create a new web3 instance and pass on result
-* 3. Get networkId - Now we can check the user is connected to the right network to use our dApp
-* 4. Get user account from metamask
-* 5. Get user balance
-*/
+import { store } from '../store/'
 
 let getWeb3 = new Promise(function (resolve, reject) {
-  // Check for injected web3 (mist/metamask)
+
   var web3js = window.web3
   if (typeof web3js !== 'undefined') {
     var web3 = new Web3(web3js.currentProvider)
@@ -65,5 +58,16 @@ let getWeb3 = new Promise(function (resolve, reject) {
       })
     })
   })
+  .then(result => {
+    return new Promise(function (resolve, reject) {
+      store.state.tokenContractInstance().balanceOf.call(result.coinbase, function (err, tokenBalance ) {
+        if (err) { console.log(err) }
+        result = Object.assign({}, result, { tokenBalance })
+        console.log(result)
+        resolve(result)
+      })
+    })
+  })
+
 
 export default getWeb3

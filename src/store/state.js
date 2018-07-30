@@ -5,8 +5,10 @@ let state = {
     networkId: null,
     coinbase: null,
     balance: null,
+    tokenBalance: null,
     error: null
   },
-  contractInstance: null
+  tokenContractInstance: null,
+  casinoContractInstance: null
 }
 export default state
