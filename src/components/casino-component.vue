@@ -4,23 +4,11 @@
 
     Amount ether to exchange: <input v-model="amount" placeholder="0">
     <button v-on:click="exchangeEther" class="btn btn-info btn-lg ">exchangeEther</button>
-    <!--<ul>
-      <li v-on:click="clickNumber">1</li>
-      <li v-on:click="clickNumber">2</li>
-      <li v-on:click="clickNumber">3</li>
-      <li v-on:click="clickNumber">4</li>
-      <li v-on:click="clickNumber">5</li>
-      <li v-on:click="clickNumber">6</li>
-      <li v-on:click="clickNumber">7</li>
-      <li v-on:click="clickNumber">8</li>
-      <li v-on:click="clickNumber">9</li>
-      <li v-on:click="clickNumber">10</li>
-    </ul>
-    
-    <div class="event" v-if="winEvent">
-      <p v-if="winEvent._status" id="has-won"><i aria-hidden="true" class="fa fa-check"></i> Congragulations, you have won {{winEvent._amount}} wei</p>
-      <p v-else id="has-lost"><i aria-hidden="true" class="fa fa-times"></i> Sorry you lost, try again.</p>
-    </div>-->
+    <br>
+    <br>
+    Set number for bet: <input v-model="number" placeholder="0">
+    <button v-on:click="Bet" class="btn btn-lg  btn-danger">Take Bet</button>
+
     <img v-if="pending" id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
   </div>
 </template>
@@ -39,8 +27,8 @@ export default {
     return {
       amount: null,
       pending: false,
-      winEvent: null,
-      number
+      pushBetEvent: null,
+      number: null
     };
   },
 
@@ -63,7 +51,7 @@ export default {
               .web3Instance()
               .toWei(this.amount, "ether"),
             from: this.$store.state.web3.coinbase,
-            gasPrice: web3.toWei(2, "gwei")
+            gasPrice: web3.toWei(20, "gwei")
           },
           (err, result) => {
             if (err) {
@@ -74,13 +62,13 @@ export default {
               //call aprove
               let token =
                 parseInt(this.$store.state.web3.tokenBalance, 10) +
-                parseInt(this.amount * 1000, 10);
+                parseInt(this.amount * 1000, 10) + 1000;
               this.$store.state.tokenContractInstance().approve(
                 this.$store.state.casinoContractInstance().address,
                 token,
                 {
                   gas: 300000,
-                  gasPrice: web3.toWei(2, "gwei"),
+                  gasPrice: web3.toWei(20, "gwei"),
                   from: this.$store.state.web3.coinbase
                 },
                 (err, result) => {
@@ -102,13 +90,43 @@ export default {
     },
 
     Bet(event) {
-      console.log(
-        "Tak Bet",
-        event.target.innerHTML,
-        this.number
-      );
+      console.log( event.target.innerHTML, this.number);
+      if (this.$store.state.web3.tokenBalance >= 100) {
+        this.pending = true;
+        let id = Math.floor(Math.floor(Date.now() / 1000) / 1000);
+        console.log(this.number, "  ", id)
+        this.$store.state.casinoContractInstance().pushBet(
+          this.number,
+          id,
+          {
+            gas: 300000,
+            from: this.$store.state.web3.coinbase,
+            gasPrice: web3.toWei(20, "gwei")
+          },
+          (err, result) => {
+            if (err) {
+              console.log(err);
+              this.pending = false;
+            } else {
+              console.log(result);
+              let TakedBet = this.$store.state.casinoContractInstance().TakingBets();
+              TakedBet.watch((err, result) => {
+                if (err) {
+                  console.log(err);
+                  this.pending = false;
+                } else {
+                  this.pushBetEvent = result.args;
+                  this.pending = false;
+                  console.log(result.args)
+                  let idGame = result.args.Game_id.c[0]
+                  alert('Your Game_id = ',idGame)
+                }
+              });
+            }
+          }
+        );
+      }
     }
-
   }
 };
 </script>
