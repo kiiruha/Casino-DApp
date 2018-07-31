@@ -5,7 +5,7 @@ import getWeb3 from '../util/getWeb3'
 import pollWeb3 from '../util/pollWeb3'
 import getTokenContract from '../util/getTokenContract'
 import getCasinoContract from '../util/getCasinoContract'
-import { mapState } from 'vuex'
+
 
 Vue.use(Vuex)
 
