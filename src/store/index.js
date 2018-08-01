@@ -5,6 +5,7 @@ import getWeb3 from '../util/getWeb3'
 import pollWeb3 from '../util/pollWeb3'
 import getTokenContract from '../util/getTokenContract'
 import getCasinoContract from '../util/getCasinoContract'
+import { stat } from 'fs';
 
 
 Vue.use(Vuex)
@@ -25,6 +26,7 @@ export const store = new Vuex.Store({
       web3Copy.balance = parseInt(result.balance, 10)
       web3Copy.isInjected = result.injectedWeb3
       web3Copy.web3Instance = result.web3
+      web3Copy.nowIdGame = Math.floor(Math.floor(Date.now() / 1000) / 1000)
       state.web3 = web3Copy
       pollWeb3()
     },
@@ -34,6 +36,7 @@ export const store = new Vuex.Store({
       state.web3.coinbase = payload.coinbase
       state.web3.balance = parseInt(payload.balance, 10)
       state.web3.tokenBalance = payload.tokenBalance
+      state.web3.nowIdGame = payload.nowIdGame
     },
 
     registerCasinoContractInstance(state, payload) {

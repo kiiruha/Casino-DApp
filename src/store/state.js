@@ -6,7 +6,8 @@ let state = {
     coinbase: null,
     balance: null,
     tokenBalance: null,
-    error: null
+    error: null,
+    nowIdGame:null
   },
   tokenContractInstance: null,
   casinoContractInstance: null

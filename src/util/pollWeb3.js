@@ -9,7 +9,7 @@ let pollWeb3 = function (state) {
 
   setInterval(() => {
     if (web3 && store.state.web3.web3Instance) {
-      if (web3.eth.coinbase !== store.state.web3.coinbase) {
+      if (web3.eth.coinbase !== store.state.web3.coinbase|| store.state.web3.nowIdGame !==Math.floor(Math.floor(Date.now() / 1000) / 1000)) {
         let newCoinbase = web3.eth.coinbase
         web3.eth.getBalance(web3.eth.coinbase, function (err, newBalance) {
           if (err) {
@@ -22,7 +22,8 @@ let pollWeb3 = function (state) {
               store.dispatch('pollWeb3', {
                 coinbase: newCoinbase,
                 balance: parseInt(newBalance, 10),
-                tokenBalance: newTokenBalance
+                tokenBalance: newTokenBalance,
+                nowIdGame: Math.floor(Math.floor(Date.now() / 1000) / 1000)
               })
             })
           }
@@ -39,7 +40,8 @@ let pollWeb3 = function (state) {
               store.dispatch('pollWeb3', {
                 coinbase: store.state.web3.coinbase,
                 balance: polledBalance,
-                tokenBalance: TokenBalance
+                tokenBalance: TokenBalance,
+                nowIdGame: Math.floor(Math.floor(Date.now() / 1000) / 1000)
               })
             })
           }

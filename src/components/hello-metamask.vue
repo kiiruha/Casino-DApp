@@ -6,6 +6,7 @@
     <p>Account: {{ coinbase }}</p>
     <p>Balance: {{ ethBalance }} Eth</p>
     <p>Token balance: {{tokenBalance}} </p>
+    <p>Now Gameid: {{gameId}} </p>
   </div>
 </template>
 
@@ -22,7 +23,8 @@ export default {
     ethBalance: state => {
       if (state.web3.web3Instance !== null) return state.web3.web3Instance().fromWei(state.web3.balance, 'ether')
     },
-    tokenBalance: state => state.web3.tokenBalance
+    tokenBalance: state => state.web3.tokenBalance,
+    gameId: state => state.web3.nowIdGame
   }),
 }
 </script>
