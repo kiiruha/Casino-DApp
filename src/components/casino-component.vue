@@ -3,7 +3,7 @@
 <div class="casino container">
   
     Amount ether to exchange: <input v-model="amount" placeholder="0">
-    <button v-on:click="exchangeEther" class="btn btn-info btn-lg ">exchangeEther</button>
+    <button v-on:click="exchangeEther" class="btn btn-light btn-lg  ">exchangeEther</button>
     <br>
     <br>
     <div v-if="TimeOutForPushBet">
@@ -14,8 +14,14 @@
       <p>Left 2 minutes to end game with id {{this.$store.state.web3.nowIdGame}}. You can push bet only the next game</p>
     </div>
     <br>
+    <button v-on:click="checkGameStatus" v-if="visibleCheckingButton" class="btn  btn-lg btn-success">Check previous game status</button>
     <br>
-    <button  v-on:click="checkWinner" class="btn btn-lg  btn-warning">Check winner in game with id {{this.$store.state.web3.nowIdGame-1}}</button>
+    <div v-if="!statusCheckingWinner && !visibleCheckingButton">
+    <button  v-on:click="checkWinner"  class="btn btn-lg  btn-warning">Check winner in game with id {{this.$store.state.web3.nowIdGame-1}}</button>
+    </div>
+    <div v-if="statusCheckingWinner">
+      <p>The drawing of this game has already been completed, please try the next game</p>
+    </div>
     <img v-if="pending" id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
   </div>
 </template>
@@ -38,7 +44,10 @@ export default {
   data() {
     return {
       approveEvent: null,
+      statusCheckingWinner: null,
+      visibleCheckingButton: true,
       amount: null,
+      nextGameId: null,
       pending: false,
       pushBetEvent: null,
       number: null,
@@ -54,6 +63,9 @@ export default {
       this.TimeOutForPushBet =
         Math.floor(Date.now() / 1000) + 120 <
         (this.$store.state.web3.nowIdGame + 1) * 1000;
+      if(this.nextGameId === this.$store.state.web3.nowIdGame){
+        this.visibleCheckingButton = true;
+      }
     }, 1000);
   },
 
@@ -191,7 +203,8 @@ export default {
                 this.pending = false;
               } else {
                 this.checkWinnerEvent = result.args;
-                this.checkWinnerEvent.number = parseInt(result.args.number, 10);
+                console.log(this.checkWinnerEvent);
+                this.checkWinnerEvent.number = result.args.number.toNumber();
                 this.pending = false;
                 console.log(this.checkWinnerEvent.number);
               }
@@ -199,6 +212,29 @@ export default {
           }
         }
       );
+    },
+
+    checkGameStatus(event) {
+      console.log(event.target.innerHTML);
+      this.visibleCheckingButton = false;
+      this.nextGameId = this.$store.state.web3.nowIdGame + 1;
+      this.$store.state
+        .casinoContractInstance()
+        .getStatusGame.call(
+          this.$store.state.web3.nowIdGame - 1,
+          (err, result) => {
+            if (err) {
+              console.log(err);
+            } else {
+              this.checkGameStatus = result;
+              console.log(
+                result,
+                " status game with id ",
+                this.$store.state.web3.nowIdGame - 1
+              );
+            }
+          }
+        );
     }
   }
 };
