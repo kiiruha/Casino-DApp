@@ -1,6 +1,6 @@
 <template>
   <div class='metamask-info'>
-    <p v-if="isInjected" id="has-metamask"><i aria-hidden="true" class="fa fa-check"></i> Metamask installed</p>
+    <p v-if="isInjected" id="has-metamask"><i aria-hidden="true" class="fa fa-check "></i> Metamask installed</p>
     <p v-else id="no-metamask"><i aria-hidden="true" class="fa fa-times"></i> Metamask not found</p>
     <p>Network: {{ network }}</p>
     <p>Account: {{ coinbase }}</p>
@@ -11,6 +11,8 @@
 </template>
 
 <script>
+import BootstrapVue from "bootstrap-vue";
+import "bootstrap-vue/dist/bootstrap-vue.css";
 import {NETWORKS} from '../util/constants/networks'
 import {mapState} from 'vuex'
 export default {
@@ -31,7 +33,9 @@ export default {
 
 <style scoped>
 .metamask-info {
-  text-align:center;
+  margin-top: -20px;
+  
+  text-align:center ;
 }
 #has-metamask {
   color: green;

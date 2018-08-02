@@ -17,8 +17,7 @@ export default {
     console.log('registerWeb3 Action dispatched from casino-dapp.vue')
     this.$store.dispatch('registerWeb3')
   },
-  components: {
-    
+  components: {  
     'hello-metamask': HelloMetamask,
     'casino-component': CasinoComponent
   }

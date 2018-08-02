@@ -1,14 +1,65 @@
 <template>
 
-<div class="casino container">
-  
+<div class="casino container col-12">
+    <button type="button" data-toggle="modal" data-target="#betModal" v-on:click="getAllBets" class="btn  btn-lg btn-success float-left" >
+      Get all bets
+    </button>
+    <button type="button" data-toggle="modal" data-target="#gamesModal"  v-on:click="getAllGames" class="btn  btn-lg btn-success float-right" >
+      Get all games
+    </button>
+
+
+    <div class="modal fade" id="gamesModal" tabindex="-1" role="dialog" aria-labelledby="allGames" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="gamesModal">All games</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <ul id="game" class="list-group"></ul>
+            <div v-for="(value, key) in allGamesEvent">
+               {{ key }}: {{ value }}
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="betModal" tabindex="-1" role="dialog" aria-labelledby="allBet" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="allBet">All bets on this game</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <ul id="bets" class=" list-group"></ul>
+            <div v-for="(value, key) in allBetsEvent">
+               {{ key }}: {{ value }}
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+        
     Amount ether to exchange: <input v-model="amount" placeholder="0">
     <button v-on:click="exchangeEther" class="btn btn-light btn-lg  ">exchangeEther</button>
     <br>
     <br>
-    <div v-if="TimeOutForPushBet">
-        Set number for bet: <input v-model="number" placeholder="0">
-        <button  v-on:click="Bet" class="btn btn-lg  btn-danger">Take Bet</button>
+    <div v-if="TimeOutForPushBet" >
+    Set number for bet: <input v-model="number" placeholder="0">
+    <button  v-on:click="Bet" class="btn btn-lg  btn-primary">Take Bet</button>
     </div>
     <div v-else>
       <p>Left 2 minutes to end game with id {{this.$store.state.web3.nowIdGame}}. You can push bet only the next game</p>
@@ -16,11 +67,10 @@
     <br>
     <button v-on:click="checkGameStatus" v-if="visibleCheckingButton" class="btn  btn-lg btn-success">Check previous game status</button>
     <br>
-    <div v-if="!statusCheckingWinner && !visibleCheckingButton">
-    <button  v-on:click="checkWinner"  class="btn btn-lg  btn-warning">Check winner in game with id {{this.$store.state.web3.nowIdGame-1}}</button>
-    </div>
-    <div v-if="statusCheckingWinner">
-      <p>The drawing of this game has already been completed, please try the next game</p>
+    <div v-if="!visibleCheckingButton">
+        <button v-if="!statusCheckingWinner" v-on:click="checkWinner"  class="btn btn-lg  btn-warning">Check winner in game with id {{this.$store.state.web3.nowIdGame-1}}</button>
+        <p v-if="statusCheckingWinner && !youWin">The drawing of prev game has already been completed, please try the next game</p>
+        <p v-if="statusCheckingWinner && youWin"> Congratulations you win in previous game</p>
     </div>
     <img v-if="pending" id="loader" src="https://loading.io/spinners/double-ring/lg.double-ring-spinner.gif">
   </div>
@@ -28,22 +78,23 @@
 
 <script>
 import BootstrapVue from "bootstrap-vue";
-import Countdown from "vuejs-countdown";
 import Vue from "vue";
-import VueCountdown from "@xkeshi/vue-countdown";
-
-Vue.component(VueCountdown.name, VueCountdown);
 
 Vue.use(BootstrapVue);
+
 import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap/dist/js/bootstrap.js";
 import "bootstrap-vue/dist/bootstrap-vue.css";
+import "bootstrap-vue/dist/bootstrap-vue.js";
 
 export default {
-  components: { Countdown },
   name: "casino",
   data() {
     return {
       approveEvent: null,
+      allGamesEvent: null,
+      allBetsEvent: null,
+      prevBetsEvent: null,
       statusCheckingWinner: null,
       visibleCheckingButton: true,
       amount: null,
@@ -51,6 +102,7 @@ export default {
       pending: false,
       pushBetEvent: null,
       number: null,
+      youWin: null,
       checkWinnerEvent: null,
       TimeOutForPushBet:
         Math.floor(Date.now() / 1000) + 120 <
@@ -63,13 +115,16 @@ export default {
       this.TimeOutForPushBet =
         Math.floor(Date.now() / 1000) + 120 <
         (this.$store.state.web3.nowIdGame + 1) * 1000;
-      if(this.nextGameId === this.$store.state.web3.nowIdGame){
+      if (this.nextGameId === this.$store.state.web3.nowIdGame) {
         this.visibleCheckingButton = true;
+        this.youWin = false;
+    
       }
     }, 1000);
   },
 
   methods: {
+    
     exchangeEther(event) {
       console.log(
         "Change Ether to Token and approve it to casino",
@@ -166,9 +221,10 @@ export default {
                   console.log(err);
                   this.pending = false;
                 } else {
+                  this.pending = false;
                   this.pushBetEvent = result.args;
                   this.pushBetEvent.Game_id = parseInt(result.args.Game_id, 10);
-                  this.pending = false;
+                  console.log(this.pushBetEvent);
                   console.log(this.pushBetEvent.Game_id);
                 }
               });
@@ -202,10 +258,14 @@ export default {
                 console.log(err);
                 this.pending = false;
               } else {
+                if((result === true)&&(this.number === result.args._number.toNumber())) {
+                this.youWin = true;
+              }
+                this.pending = false;
+                this.statusCheckingWinner = true;
                 this.checkWinnerEvent = result.args;
                 console.log(this.checkWinnerEvent);
-                this.checkWinnerEvent.number = result.args.number.toNumber();
-                this.pending = false;
+                this.checkWinnerEvent.number = result.args._number.toNumber();
                 console.log(this.checkWinnerEvent.number);
               }
             });
@@ -226,7 +286,10 @@ export default {
             if (err) {
               console.log(err);
             } else {
-              this.checkGameStatus = result;
+              this.statusCheckingWinner = result;
+              if((result === true)&&(this.number === this.allGamesEvent._number.toNumber())) {
+                this.youWin = true;
+              }
               console.log(
                 result,
                 " status game with id ",
@@ -235,6 +298,59 @@ export default {
             }
           }
         );
+    },
+
+    getAllBets(event) {
+      console.log(event.target.innerHTML);
+      let AllBets = this.$store.state
+        .casinoContractInstance()
+        .TakingBets(
+          { Game_id: this.$store.state.web3.nowIdGame },
+          { fromBlock: 3756624 }
+        );
+      AllBets.watch((err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          this.allBetsEvent = result.args;
+          
+          console.log(this.allBetsEvent);
+        }
+      });
+    },
+
+    getPrevBets() {
+      console.log("get prev events");
+      let AllBets = this.$store.state
+        .casinoContractInstance()
+        .TakingBets(
+          { Game_id: this.$store.state.web3.nowIdGame-1 },
+          { fromBlock: 3756624 }
+        );
+      AllBets.watch((err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          this.prevBetsEvent = result.args;
+          
+          console.log(this.prevBetsEvent);
+        }
+      });
+    },
+
+    getAllGames(event) {
+      console.log(event.target.innerHTML);
+      let AllGames = this.$store.state
+        .casinoContractInstance()
+        .PlayedGames({}, { fromBlock: 3756624 });
+      AllGames.watch((err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          this.allGamesEvent = result.args;
+          console.log(this.allGamesEvent);
+        }
+      });
     }
   }
 };
@@ -242,7 +358,7 @@ export default {
 
 <style scoped>
 .casino {
-  margin-top: 50px;
+  margin-top: 25px;
   text-align: center;
 }
 #loader {
