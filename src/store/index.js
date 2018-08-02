@@ -5,7 +5,6 @@ import getWeb3 from '../util/getWeb3'
 import pollWeb3 from '../util/pollWeb3'
 import getTokenContract from '../util/getTokenContract'
 import getCasinoContract from '../util/getCasinoContract'
-import { stat } from 'fs';
 
 
 Vue.use(Vuex)
@@ -21,7 +20,7 @@ export const store = new Vuex.Store({
       let web3Copy = state.web3
       web3Copy.coinbase = result.coinbase
       console.log(result)
-      web3Copy.tokenBalance = result.tokenBalance
+      web3Copy.tokenBalance = result.tokenBalance.toNumber()
       web3Copy.networkId = result.networkId
       web3Copy.balance = parseInt(result.balance, 10)
       web3Copy.isInjected = result.injectedWeb3

@@ -22,7 +22,7 @@ let pollWeb3 = function (state) {
               store.dispatch('pollWeb3', {
                 coinbase: newCoinbase,
                 balance: parseInt(newBalance, 10),
-                tokenBalance: newTokenBalance,
+                tokenBalance: newTokenBalance.toNumber(),
                 nowIdGame: Math.floor(Math.floor(Date.now() / 1000) / 1000)
               })
             })
@@ -40,7 +40,7 @@ let pollWeb3 = function (state) {
               store.dispatch('pollWeb3', {
                 coinbase: store.state.web3.coinbase,
                 balance: polledBalance,
-                tokenBalance: TokenBalance,
+                tokenBalance: TokenBalance.toNumber(),
                 nowIdGame: Math.floor(Math.floor(Date.now() / 1000) / 1000)
               })
             })

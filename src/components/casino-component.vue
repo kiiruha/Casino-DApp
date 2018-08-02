@@ -1,13 +1,18 @@
 <template>
 
 <div class="casino container">
-
+  
     Amount ether to exchange: <input v-model="amount" placeholder="0">
     <button v-on:click="exchangeEther" class="btn btn-info btn-lg ">exchangeEther</button>
     <br>
     <br>
-    Set number for bet: <input v-model="number" placeholder="0">
-    <button v-if="TimeOutForPushBet" v-on:click="Bet" class="btn btn-lg  btn-danger">Take Bet</button>
+    <div v-if="TimeOutForPushBet">
+        Set number for bet: <input v-model="number" placeholder="0">
+        <button  v-on:click="Bet" class="btn btn-lg  btn-danger">Take Bet</button>
+    </div>
+    <div v-else>
+      <p>Left 2 minutes to end game with id {{this.$store.state.web3.nowIdGame}}. You can push bet only the next game</p>
+    </div>
     <br>
     <br>
     <button  v-on:click="checkWinner" class="btn btn-lg  btn-warning">Check winner in game with id {{this.$store.state.web3.nowIdGame-1}}</button>
@@ -16,29 +21,40 @@
 </template>
 
 <script>
-import Vue from "vue";
 import BootstrapVue from "bootstrap-vue";
+import Countdown from "vuejs-countdown";
+import Vue from "vue";
+import VueCountdown from "@xkeshi/vue-countdown";
+
+Vue.component(VueCountdown.name, VueCountdown);
 
 Vue.use(BootstrapVue);
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap-vue/dist/bootstrap-vue.css";
 
 export default {
+  components: { Countdown },
   name: "casino",
   data() {
     return {
+      approveEvent: null,
       amount: null,
       pending: false,
       pushBetEvent: null,
       number: null,
-      checkWinnerEvent: null
+      checkWinnerEvent: null,
+      TimeOutForPushBet:
+        Math.floor(Date.now() / 1000) + 120 <
+        (this.$store.state.web3.nowIdGame + 1) * 1000
     };
   },
 
-  computed: {
-    TimeOutForPushBet: function () {
-      return Math.floor(Date.now() / 1000) + 500 <=(this.$store.state.web3.nowIdGame+1)*1000
-    }
+  mounted() {
+    setInterval(() => {
+      this.TimeOutForPushBet =
+        Math.floor(Date.now() / 1000) + 120 <
+        (this.$store.state.web3.nowIdGame + 1) * 1000;
+    }, 1000);
   },
 
   methods: {
@@ -50,7 +66,8 @@ export default {
       );
       if (
         this.$store.state.web3.web3Instance().toWei(this.amount, "ether") <
-        this.$store.state.web3.balance && this.$store.state.web3.balance>0.0009
+          this.$store.state.web3.balance &&
+        this.$store.state.web3.balance > 0.0009
       ) {
         this.pending = true;
         this.$store.state.tokenContractInstance().exchangeEther(
@@ -71,8 +88,8 @@ export default {
               //call aprove
               let token =
                 parseInt(this.$store.state.web3.tokenBalance, 10) +
-                parseInt(this.amount * 1000, 10)//change amounnt
-              console.log(token)
+                parseInt(this.amount * 1000, 10); //change amounnt
+              console.log(token);
               this.$store.state.tokenContractInstance().approve(
                 this.$store.state.casinoContractInstance().address,
                 token,
@@ -86,8 +103,19 @@ export default {
                     console.log(err);
                     this.pending = false;
                   } else {
-                    this.pending = false;
-                    console.log(result);
+                    let approveEvent = this.$store.state
+                      .tokenContractInstance()
+                      .Approval();
+                    approveEvent.watch((err, result) => {
+                      if (err) {
+                        console.log(err);
+                        this.pending = false;
+                      } else {
+                        this.approveEvent = result.args;
+                        this.pending = false;
+                        console.log(this.approveEvent);
+                      }
+                    });
                   }
                 }
               );
@@ -100,10 +128,10 @@ export default {
     },
 
     Bet(event) {
-      console.log( event.target.innerHTML, this.number);
+      console.log(event.target.innerHTML, this.number);
       if (this.$store.state.web3.tokenBalance >= 100) {
         this.pending = true;
-        console.log(this.number, "  ", this.$store.state.web3.nowIdGame)
+        console.log(this.number, "  ", this.$store.state.web3.nowIdGame);
         this.$store.state.casinoContractInstance().pushBet(
           this.number,
           this.$store.state.web3.nowIdGame,
@@ -118,16 +146,18 @@ export default {
               this.pending = false;
             } else {
               console.log(result);
-              let TakedBet = this.$store.state.casinoContractInstance().TakingBets();
+              let TakedBet = this.$store.state
+                .casinoContractInstance()
+                .TakingBets();
               TakedBet.watch((err, result) => {
                 if (err) {
                   console.log(err);
                   this.pending = false;
                 } else {
                   this.pushBetEvent = result.args;
-                  this.pushBetEvent.Game_id = parseInt(result.args.Game_id, 10)
+                  this.pushBetEvent.Game_id = parseInt(result.args.Game_id, 10);
                   this.pending = false;
-                  console.log(this.pushBetEvent.Game_id)
+                  console.log(this.pushBetEvent.Game_id);
                 }
               });
             }
@@ -137,36 +167,38 @@ export default {
     },
 
     checkWinner(event) {
-       console.log( event.target.innerHTML);
-        this.pending = true;
-       this.$store.state.casinoContractInstance().checkWinner(
-          this.$store.state.web3.nowIdGame-1,
-          {
-            gas: 300000,
-            from: this.$store.state.web3.coinbase,
-            gasPrice: web3.toWei(20, "gwei")
-          },
-          (err, result) => {
-            if (err) {
-              console.log(err);
-              this.pending = false;
-            } else {
-              console.log(result);
-              let checkWinnerEvent = this.$store.state.casinoContractInstance().PlayedGames();
-              checkWinnerEvent.watch((err, result) => {
-                if (err) {
-                  console.log(err);
-                  this.pending = false;
-                } else {
-                  this.checkWinnerEvent = result.args;
-                  this.checkWinnerEvent.number = parseInt(result.args.number, 10)
-                  this.pending = false;
-                  console.log(this.checkWinnerEvent.number)
-                }
-              });
-            }
+      console.log(event.target.innerHTML);
+      this.pending = true;
+      this.$store.state.casinoContractInstance().checkWinner(
+        this.$store.state.web3.nowIdGame - 1,
+        {
+          gas: 300000,
+          from: this.$store.state.web3.coinbase,
+          gasPrice: web3.toWei(20, "gwei")
+        },
+        (err, result) => {
+          if (err) {
+            console.log(err);
+            this.pending = false;
+          } else {
+            console.log(result);
+            let checkWinnerEvent = this.$store.state
+              .casinoContractInstance()
+              .PlayedGames();
+            checkWinnerEvent.watch((err, result) => {
+              if (err) {
+                console.log(err);
+                this.pending = false;
+              } else {
+                this.checkWinnerEvent = result.args;
+                this.checkWinnerEvent.number = parseInt(result.args.number, 10);
+                this.pending = false;
+                console.log(this.checkWinnerEvent.number);
+              }
+            });
           }
-        );
+        }
+      );
     }
   }
 };

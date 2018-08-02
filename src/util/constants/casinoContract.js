@@ -1,4 +1,4 @@
-const address = '0x6513E44D9581Ceda92d3CBE8273f88e6a2420730'
+const address = '0x4928d8a3d5d6c9012a88deb93cffd319a219a3d9'
 const ABI = [
 	{
 		"constant": false,
@@ -65,23 +65,6 @@ const ABI = [
 		"inputs": [
 			{
 				"indexed": true,
-				"name": "_from",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"name": "_to",
-				"type": "address"
-			}
-		],
-		"name": "OwnershipTransferred",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
 				"name": "Game_id",
 				"type": "uint256"
 			},
@@ -102,6 +85,23 @@ const ABI = [
 			}
 		],
 		"name": "TakingBets",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"name": "_from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"name": "_to",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
 		"type": "event"
 	},
 	{
@@ -179,6 +179,25 @@ const ABI = [
 				"type": "uint256"
 			}
 		],
+		"name": "getStatusGame",
+		"outputs": [
+			{
+				"name": "success",
+				"type": "bool"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "Game_id",
+				"type": "uint256"
+			}
+		],
 		"name": "getTimes",
 		"outputs": [
 			{
@@ -195,6 +214,25 @@ const ABI = [
 			},
 			{
 				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [
+			{
+				"name": "Game_id",
+				"type": "uint256"
+			}
+		],
+		"name": "getWinningNumber",
+		"outputs": [
+			{
+				"name": "_number",
 				"type": "uint256"
 			}
 		],
