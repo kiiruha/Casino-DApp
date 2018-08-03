@@ -1,10 +1,10 @@
 <template>
 
 <div class="casino container col-12">
-    <button type="button" data-toggle="modal" data-target="#betModal" v-on:click="getAllBets" class="btn  btn-lg btn-success float-left" >
+    <button type="button" data-toggle="modal" data-target="#betModal" v-on:click="getAllBets"  class="btn  btn-lg btn-success float-left" >
       Get all bets
     </button>
-    <button type="button" data-toggle="modal" data-target="#gamesModal"  v-on:click="getAllGames" class="btn  btn-lg btn-success float-right" >
+    <button type="button" data-toggle="modal" data-target="#gamesModal"  class="btn  btn-lg btn-success float-right" >
       Get all games
     </button>
 
@@ -78,7 +78,7 @@
 <script>
 import BootstrapVue from "bootstrap-vue";
 import Vue from "vue";
-import $ from 'jquery';
+import $ from "jquery";
 
 Vue.use(BootstrapVue);
 
@@ -118,13 +118,14 @@ export default {
       if (this.nextGameId === this.$store.state.web3.nowIdGame) {
         this.visibleCheckingButton = true;
         this.youWin = false;
-    
       }
     }, 1000);
+    setTimeout(() => {
+      this.getAllGames();
+    }, 5000);
   },
 
   methods: {
-    
     exchangeEther(event) {
       console.log(
         "Change Ether to Token and approve it to casino",
@@ -138,6 +139,7 @@ export default {
       ) {
         this.pending = true;
         this.$store.state.tokenContractInstance().exchangeEther(
+          //call exchange function from token contract
           {
             gas: 300000,
             value: this.$store.state.web3
@@ -158,6 +160,7 @@ export default {
                 parseInt(this.amount * 1000, 10); //change amounnt
               console.log(token);
               this.$store.state.tokenContractInstance().approve(
+                //call approve function
                 this.$store.state.casinoContractInstance().address,
                 token,
                 {
@@ -174,6 +177,7 @@ export default {
                       .tokenContractInstance()
                       .Approval();
                     approveEvent.watch((err, result) => {
+                      //watch from Aproval event
                       if (err) {
                         console.log(err);
                         this.pending = false;
@@ -258,9 +262,12 @@ export default {
                 console.log(err);
                 this.pending = false;
               } else {
-                if((result === true)&&(this.number === result.args._number.toNumber())) {
-                this.youWin = true;
-              }
+                if (
+                  result === true &&
+                  this.number === result.args._number.toNumber()
+                ) {
+                  this.youWin = true;
+                }
                 this.pending = false;
                 this.statusCheckingWinner = true;
                 this.checkWinnerEvent = result.args;
@@ -287,7 +294,10 @@ export default {
               console.log(err);
             } else {
               this.statusCheckingWinner = result;
-              if((result === true)&&(this.number === this.allGamesEvent._number.toNumber())) {
+              if (
+                result === true &&
+                this.number === this.allGamesEvent._number.toNumber()
+              ) {
                 this.youWin = true;
               }
               console.log(
@@ -301,7 +311,7 @@ export default {
     },
 
     getAllBets(event) {
-      $("ul").empty();
+      $("bets").empty();
       console.log(event.target.innerHTML);
       let AllBets = this.$store.state
         .casinoContractInstance()
@@ -313,9 +323,14 @@ export default {
         if (err) {
           console.log(err);
         } else {
-          
           this.allBetsEvent = result.args;
-          $("#bets").append('<li class="list-group-item">' + result.args.player_address + ' push bet to number ' + result.args._number +'</li>');
+          $("#bets").append(
+            '<li class="list-group-item">' +
+              result.args.player_address +
+              " push bet to number " +
+              result.args._number +
+              "</li>"
+          );
           console.log(this.allBetsEvent);
         }
       });
@@ -326,7 +341,7 @@ export default {
       let AllBets = this.$store.state
         .casinoContractInstance()
         .TakingBets(
-          { Game_id: this.$store.state.web3.nowIdGame-1 },
+          { Game_id: this.$store.state.web3.nowIdGame - 1 },
           { fromBlock: 3756624 }
         );
       AllBets.watch((err, result) => {
@@ -334,15 +349,15 @@ export default {
           console.log(err);
         } else {
           this.prevBetsEvent = result.args;
-          
+
           console.log(this.prevBetsEvent);
         }
       });
     },
 
-    getAllGames(event) {
+    getAllGames() {
       $("ul").empty();
-      console.log(event.target.innerHTML);
+
       let AllGames = this.$store.state
         .casinoContractInstance()
         .PlayedGames({}, { fromBlock: 3756624 });
@@ -351,8 +366,15 @@ export default {
           console.log(err);
         } else {
           this.allGamesEvent = result.args;
-          
-          $("#game").append('<li class="list-group-item">' + result.args.Game_id + ' have winner number ' + result.args._number + ' and bank ' + result.args._bank + '</li>');
+          $("#game").append(
+            '<li class="list-group-item">' +
+              result.args.Game_id +
+              " have winner number " +
+              result.args._number +
+              " and bank " +
+              result.args._bank +
+              "</li>"
+          );
           console.log(this.allGamesEvent);
         }
       });
@@ -369,7 +391,7 @@ export default {
 #loader {
   width: 150px;
 }
-ul  .game{
+ul .game {
   margin: 25px;
   list-style-type: none;
   display: grid;
@@ -377,31 +399,15 @@ ul  .game{
   grid-column-gap: 25px;
   grid-row-gap: 25px;
 }
-li  .game{
+li .game {
   padding: 20px;
   margin-right: 5px;
   border-radius: 50%;
   cursor: pointer;
   background-color: #fff;
-  border: -2px solid #bf0d9b;
-  color: #bf0d9b;
-  box-shadow: 3px 5px #bf0d9b;
 }
-li:hover {
-  background-color: #bf0d9b;
-  color: white;
-  box-shadow: 0px 0px #bf0d9b;
-}
-li:active {
-  opacity: 0.7;
-}
+
 * {
   color: #444444;
-}
-#has-won {
-  color: green;
-}
-#has-lost {
-  color: red;
 }
 </style>

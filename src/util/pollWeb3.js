@@ -1,6 +1,8 @@
 import Web3 from 'web3'
 import { store } from '../store/'
 
+//dinamicaly update all data from metamask
+
 
 let pollWeb3 = function (state) {
   let web3 = window.web3

@@ -1,6 +1,8 @@
 import Web3 from 'web3'
 import { store } from '../store/'
 
+// get all data from metamask 
+
 let getWeb3 = new Promise(function (resolve, reject) {
 
   var web3js = window.web3
@@ -60,6 +62,7 @@ let getWeb3 = new Promise(function (resolve, reject) {
   })
   .then(result => {
     return new Promise(function (resolve, reject) {
+      // Retrieve token balance for coinbase
       store.state.tokenContractInstance().balanceOf.call(result.coinbase, function (err, tokenBalance ) {
         if (err) { console.log(err) }
         result = Object.assign({}, result, { tokenBalance })
