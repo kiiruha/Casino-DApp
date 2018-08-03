@@ -9,20 +9,20 @@
     </button>
 
 
-    <div class="modal fade" id="gamesModal" tabindex="-1" role="dialog" aria-labelledby="allGames" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
+    <div class="modal fade" id="gamesModal"  role="dialog" aria-labelledby="allGames" aria-hidden="true">
+      <div class="modal-dialog modal-lg" >
+        <div class="modal-content ">
           <div class="modal-header">
             <h5 class="modal-title" id="gamesModal">All games</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
-            <ul id="game" class="list-group"></ul>
-            <div v-for="(value, key) in allGamesEvent">
-               {{ key }}: {{ value }}
-            </div>
+          <div class="modal-body ">
+            <ul id="game" class="list-group game">
+
+            </ul>
+           
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -32,8 +32,8 @@
     </div>
 
     <div class="modal fade" id="betModal" tabindex="-1" role="dialog" aria-labelledby="allBet" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
+      <div class="modal-dialog s" role="document">
+        <div class="modal-content ">
           <div class="modal-header">
             <h5 class="modal-title" id="allBet">All bets on this game</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -41,10 +41,9 @@
             </button>
           </div>
           <div class="modal-body">
-            <ul id="bets" class=" list-group"></ul>
-            <div v-for="(value, key) in allBetsEvent">
-               {{ key }}: {{ value }}
-            </div>
+            <ul id="bets" class=" list-group">
+
+            </ul>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -79,6 +78,7 @@
 <script>
 import BootstrapVue from "bootstrap-vue";
 import Vue from "vue";
+import $ from 'jquery';
 
 Vue.use(BootstrapVue);
 
@@ -301,6 +301,7 @@ export default {
     },
 
     getAllBets(event) {
+      $("ul").empty();
       console.log(event.target.innerHTML);
       let AllBets = this.$store.state
         .casinoContractInstance()
@@ -312,8 +313,9 @@ export default {
         if (err) {
           console.log(err);
         } else {
-          this.allBetsEvent = result.args;
           
+          this.allBetsEvent = result.args;
+          $("#bets").append('<li class="list-group-item">' + result.args.player_address + ' push bet to number ' + result.args._number +'</li>');
           console.log(this.allBetsEvent);
         }
       });
@@ -339,6 +341,7 @@ export default {
     },
 
     getAllGames(event) {
+      $("ul").empty();
       console.log(event.target.innerHTML);
       let AllGames = this.$store.state
         .casinoContractInstance()
@@ -348,6 +351,8 @@ export default {
           console.log(err);
         } else {
           this.allGamesEvent = result.args;
+          
+          $("#game").append('<li class="list-group-item">' + result.args.Game_id + ' have winner number ' + result.args._number + ' and bank ' + result.args._bank + '</li>');
           console.log(this.allGamesEvent);
         }
       });
@@ -364,7 +369,7 @@ export default {
 #loader {
   width: 150px;
 }
-ul {
+ul  .game{
   margin: 25px;
   list-style-type: none;
   display: grid;
@@ -372,7 +377,7 @@ ul {
   grid-column-gap: 25px;
   grid-row-gap: 25px;
 }
-li {
+li  .game{
   padding: 20px;
   margin-right: 5px;
   border-radius: 50%;
