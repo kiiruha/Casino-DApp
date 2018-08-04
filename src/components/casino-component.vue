@@ -57,8 +57,8 @@
     <br>
     <br>
     <div v-if="TimeOutForPushBet" >
-    Set number for bet: <input v-model="number" placeholder="0">
-    <button  v-on:click="Bet" class="btn btn-lg  btn-primary">Take Bet</button>
+    Set number (1 — 10) for bet: <input v-model="number" placeholder="0">
+    <button  v-on:click="Bet" class="btn btn-lg  btn-primary">Make a bet</button>
     </div>
     <div v-else>
       <p>Left 2 minutes to end game with id {{this.$store.state.web3.nowIdGame}}. You can push bet only the next game</p>
@@ -311,7 +311,7 @@ export default {
     },
 
     getAllBets(event) {
-      $("bets").empty();
+      $("#bets").empty();
       console.log(event.target.innerHTML);
       let AllBets = this.$store.state
         .casinoContractInstance()
