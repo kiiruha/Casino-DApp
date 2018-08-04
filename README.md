@@ -1,15 +1,16 @@
+
 # Lottery on the blockchain of ether!
 
    <img src="https://img.shields.io/badge/stability-experimental-orange.svg?style=flat-square"> ![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)
   
 #### MetaMask is required
 ## Table of Contents
- - [Build](#Build)
- - [The principle of work](#the-principle-of-work) 
-   * [Prepare to the game](#prepare-to-the-game)
+ - [Build](#build)
+ - [Work principle](#work-principle)
+   * [Preparation to the game](#preparation-to-the-game)
    * [Making a bet](#making-a-bet)
    * [Information about bets and games](#information-about-bets-and-games)
-   * [Check the winer](#check-the-winer)
+   * [Check the winner](#check-the-winner)
 
    
 ## Build 
