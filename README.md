@@ -5,11 +5,11 @@
 #### MetaMask is required
 ## Table of Contents
  - [Build](#Build)
- - [The principle of work](#The-principle-of-work) 
- -- [Prepare to the game](#Prepare-to-the-game)
- -- [Making a bet](#Making-a-bet)
- -- [Information about bets and games](#Information-about-bets-and-games)
- -- [Check the winer](#Check-the-winer)
+ - [The principle of work](#the-principle-of-work) 
+   * [Prepare to the game](#prepare-to-the-game)
+   * [Making a bet](#making-a-bet)
+   * [Information about bets and games](#information-about-bets-and-games)
+   * [Check the winer](#check-the-winer)
 
    
 ## Build 
@@ -52,9 +52,9 @@ You can also get all the information about all bets in a current game by clickin
 
 ### Check the winner
 In each game you have the opportunity to start the draw of the previous game.
-It is very simple. First, you need to press the button **Check previous game status**, if someone has already checked the past game, you will see a message about that, otherwise you will be prompted to click the button **Check winner in game with id *previous game id*** , if you clicked the check button, metamask will suggest confirming your actions.
-If you win then you will increase the token balance automatically.
+It is very simple. First, you need to press the button **Check previous game status**, if someone has already checked the past game, you will see a message about that, otherwise you will be prompted to click the button **Check winner in game with id *previous game id*** , if you click the check button, metamask will suggest confirming your actions.
+If you win, you will increase the token balance automatically.
 
->### P.S. A new game happens every 1000 seconds, if you do not win in this game, you can try your luck in the next
+>### P.S. A new game happens every 1000 seconds, if you do not win in this game, you can try your luck in the next one.
 
 
