@@ -227,9 +227,9 @@ export default {
                 } else {
                   this.pending = false;
                   this.pushBetEvent = result.args;
-                  this.pushBetEvent.Game_id = parseInt(result.args.Game_id, 10);
+                  this.pushBetEvent.Game_id = parseInt(result.args.Game_id, 10); //add _ to argumet if you redeployed contract
                   console.log(this.pushBetEvent);
-                  console.log(this.pushBetEvent.Game_id);
+                  console.log(this.pushBetEvent.Game_id);//add _ to argumet if you redeployed contract
                 }
               });
             }
@@ -326,7 +326,7 @@ export default {
           this.allBetsEvent = result.args;
           $("#bets").append(
             '<li class="list-group-item">' +
-              result.args.player_address +
+              result.args.player_address +  //add _ to argumet if you redeployed contract
               " push bet to number " +
               result.args._number +
               "</li>"
@@ -336,6 +336,7 @@ export default {
       });
     },
 
+    //method for next features
     getPrevBets() {
       console.log("get prev events");
       let AllBets = this.$store.state
@@ -368,7 +369,7 @@ export default {
           this.allGamesEvent = result.args;
           $("#game").append(
             '<li class="list-group-item">' +
-              result.args.Game_id +
+              result.args.Game_id +  //add _ to argumet if you redeployed contract
               " have winner number " +
               result.args._number +
               " and bank " +
