@@ -24,7 +24,7 @@ contract Casino is Owned {
     
     mapping(uint256 => Game) games; 
     
-    event TakingBets(uint indexed Game_id, address player_address, uint _number, uint256 time);
+    event TakingBets(uint indexed Game_id, address _player_address, uint _number, uint256 _time);
     event PlayedGames(uint indexed Game_id, uint _number, uint _startGame, uint _endGame, uint256 _bank,  bool _status);
 
 
@@ -53,20 +53,20 @@ contract Casino is Owned {
         }
     }
     
-    function pushBet(uint _number, uint256 Game_id ) public payable  returns (bool success){
-        if ((Game_id == now/gameDuration) && ((now + 1 minutes)/gameDuration == Game_id)){ 
+    function pushBet(uint _number, uint256 _Game_id ) public payable  returns (bool success){
+        if ((_Game_id == now/gameDuration) && ((now + 1 minutes)/gameDuration == _Game_id)){ 
             // not access to push bet if the game end after 1 minute
-            if(games[Game_id].startGame != 0){  //check first bet or not
-                games[Game_id].playersByNumber[_number].push(msg.sender);
+            if(games[_Game_id].startGame != 0){  //check first bet or not
+                games[_Game_id].playersByNumber[_number].push(msg.sender);
                 require(_token.transferFrom(msg.sender, this, 100));
-                games[Game_id].players++;
+                games[_Game_id].players++;
             } else {
-                games[Game_id].startGame =  uint(uint(now)/uint(gameDuration))*1000;
-                games[Game_id].playersByNumber[_number].push(msg.sender);
+                games[_Game_id].startGame =  uint(uint(now)/uint(gameDuration))*1000;
+                games[_Game_id].playersByNumber[_number].push(msg.sender);
                 require(_token.transferFrom(msg.sender, this, 100));
-                games[Game_id].players = 1;
+                games[_Game_id].players = 1;
             }
-            emit TakingBets(Game_id, msg.sender, _number, now);
+            emit TakingBets(_Game_id, msg.sender, _number, now);
             return true;
         } else{
             return false;
@@ -106,8 +106,6 @@ contract Casino is Owned {
     }
 
     function random() public view returns (uint) {
-       // return uint8(uint256(keccak256(block.timestamp, block.difficulty))%11);
-       //  uint(block.blockhash(block.number-1))%10 + 1;
         return uint8(uint256(keccak256(block.timestamp, block.difficulty))%10+1);
     }
 }
