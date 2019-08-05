@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@xkeshi/vue-countdown": "^1.0.0",
-    "bootstrap": "^4.1.3",
+    "bootstrap": "^4.3.1",
     "bootstrap-vue": "^2.0.0-rc.11",
     "font-awesome": "^4.7.0",
     "resolve-url-loader": "^2.3.0",
